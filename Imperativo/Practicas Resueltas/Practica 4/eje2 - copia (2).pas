@@ -134,7 +134,7 @@
 					else 
 						if (dato.ISBN < a2^.dato^.dato.ISBN) then  {si el isbn es menor}
 							agregarEnSegundoArbol(a2^.HI,dato)
-					else															{sino lo mando a la derecha (voy a tener mis repetidos)}
+					else								
 							agregarEnSegundoArbol(a2^.HD,dato); 
 			end; 
 	end; 	
