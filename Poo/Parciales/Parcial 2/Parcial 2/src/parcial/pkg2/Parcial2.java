@@ -1,3 +1,15 @@
+****
+Aclaracion: Asi es como lo resolvi.  Use una matriz.   
+Planteenlo siguiendo el enunciado.  
+Puede ser que se tenga que usar vector de vectores.  
+
+PD: si lo puedo preguntar con algun ayudante para ver qué estructura es la correcta, les aviso en las lineas de abajo.  
+
+****
+
+
+
+
 package parcial.pkg2;
 /**
  *
