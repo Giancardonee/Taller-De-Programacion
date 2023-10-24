@@ -1,0 +1,27 @@
+{Programe al robot para que recorra la calle 29 hasta encontrar una
+esquina vacía que puede no existir. En caso de encontrarla depositar en ella una flor. Si
+no pudo depositar (porque no tenía) informar F (falso).}
+
+programa program1
+areas
+  ciudad: AreaC(1,1,100,100)
+robots
+  robot tipo1
+  comenzar
+    Pos(1,29)
+    derecha
+    mientras (HayFlorEnLaEsquina)|(HayPapelEnLaEsquina)&(PosAv<100)
+      mover
+    si (~HayFlorEnLaEsquina) & (~HayPapelEnLaEsquina)
+      si (HayFlorEnLaBolsa)
+        depositarFlor
+        Informar(V)
+      sino
+        Informar(F)
+  fin
+variables
+  robot1: tipo1
+comenzar
+  AsignarArea(robot1,ciudad)
+  Iniciar(robot1,1,1)
+fin
