@@ -146,7 +146,6 @@ procesos
     si ( suCantidad > cantMax)
       robotMax:= quienEs
       cantMax:= suCantidad
-      Informar(404)     
   fin
 {---------------------------------------------------------------}
   proceso calcularRobotMaximo (ES robotMax:numero)
