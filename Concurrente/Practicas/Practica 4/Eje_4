@@ -1,16 +1,3 @@
-Dudas con este ejercicio: 
-  .Hace falta bloquear la esquina? por como lo plantee no existe riesgo
-  de que puedan llegar a chocar. Ya que un robot va a empezar cuando
-  el otro robot termine su tarea. 
-  - El robot jefe para volver a mandar una tarea, debe recibir un mensaje 
-  del robot trabajador, avisandole que termino,
-  por lo que tengo entendido. No seria necesario bloquear las esquinas?
-  
-  
-  .Esta bien hacer el random de tareas entre 1..3? o tiene que ser 1..4? 
-  - de la unica forma que le llegue la tarea 4 al robot trabajador es 
-  cuando el robot jefe ya asigno las 10 tareas. 
-
 programa eje4
 procesos
   proceso juntarPapeles
