@@ -1,5 +1,3 @@
-{preguntar linea 100 y linea 101}
-{creo que no es necesario bloquear la esquina cuando la acceda el jefe}
 programa eje2
 procesos
   proceso juntarFlores (ES cantF:numero)
@@ -99,13 +97,10 @@ procesos
     avIni:= PosAv
     caIni:= PosCa
     cantF:=0
-    {preguntar si es necesario bloquear la esquina}
-    {ya terminaron todos los robots, por lo tanto no podrian accederla}
-    BloquearEsquina(50,50)
+  {no es necesario bloquear la esquina, porque en teoria, ya terminaron todos los robots para que el jefe pueda acceder a esta esquina}
     Pos(50,50)
     juntarFlores(cantF)
     Pos(avIni,caIni)
-    LiberarEsquina(50,50)
     Informar('La_cantidad_de_flores_totales_son',cantF)
   fin
 areas
