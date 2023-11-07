@@ -1,0 +1,204 @@
+{equipo 1: Floreros, equipo2: Papeleros }
+programa eje1
+procesos  
+  proceso juntarFlores (ES cantF:numero)
+  comenzar
+    mientras (HayFlorEnLaEsquina)
+      tomarFlor
+      cantF:= cantF+1
+  fin
+  proceso juntarPapeles(ES cantP:numero)
+  comenzar
+    mientras (HayPapelEnLaEsquina)
+      tomarPapel
+      cantP:= cantP+1
+  fin
+  proceso bloquearEsquinaTeamRojo (ES cantF:numero; E calle:numero)
+  comenzar
+    BloquearEsquina(PosAv,calle)
+    mover {av,98}
+    juntarFlores(cantF)
+    BloquearEsquina(PosAv,calle+1)
+    mover {av,99}
+    LiberarEsquina(PosAv,calle)
+    juntarFlores(cantF)
+    mover {av,100}
+    LiberarEsquina(PosAv,calle+1)
+  fin
+  {arreglar para bloquear las dos calles de una,}
+  proceso recorrerAvenidaTeamRojo (ES cantF:numero)
+  comenzar
+    cantF:=0
+    repetir 97
+      juntarFlores(cantF)
+      si ( (PosCa = 97) )
+        bloquearEsquinaTeamRojo(cantF,PosCa+1)
+      sino
+        mover
+    juntarFlores(cantF) {procesamos la ultima esquina}
+  fin
+  proceso bloquearEsquinaTeamAzul(ES cantP:numero; E avenida:numero)
+  comenzar
+    BloquearEsquina(avenida,PosCa)
+    mover
+    juntarPapeles(cantP)
+    BloquearEsquina(avenida-1,PosCa)
+    mover
+    LiberarEsquina(avenida,PosCa)
+    juntarPapeles(cantP)
+    mover
+    LiberarEsquina(avenida,PosCa)
+  fin
+  proceso posBajarAvenidas 
+  comenzar
+    repetir 3
+      derecha
+  fin
+  proceso recorrerCalleTeamAzul (ES cantP:numero)
+  comenzar
+    cantP:=0
+    posBajarAvenidas
+    repetir 97
+      juntarPapeles(cantP)
+      si ( (PosAv = 4) )
+        bloquearEsquinaTeamAzul(cantP,PosAv-1) 
+      sino
+        mover
+    juntarPapeles(cantP){procesamos la ultima esquina}
+  fin
+  proceso recibirValoresEquipos (ES equipo1: numero; ES equipo2:numero)
+  variables
+    id:numero
+    cantidad:numero
+  comenzar
+    equipo1:=0
+    equipo2:=0
+    repetir 4
+      RecibirMensaje(id,*)
+      si (id = 1)
+        RecibirMensaje(cantidad,r1)
+      sino
+        si (id = 2)
+          RecibirMensaje(cantidad,r2)
+        sino
+          si (id = 3)
+            RecibirMensaje(cantidad,a1)
+          sino
+            si (id = 4)
+              RecibirMensaje(cantidad,a2)
+      si ( (id = 1)| (id = 2) )
+        equipo1:= equipo1+cantidad
+      sino 
+        si ( (id = 3) | (id = 4) )
+          equipo2:= equipo2 + cantidad   
+  fin
+  proceso calcularMax(E team1:numero; E team2:numero; ES teamMax:numero)
+  comenzar
+    si (team1 > team2)
+      teamMax:= 1
+    sino 
+      si (team2 > team1)
+        teamMax:= 2
+      sino {si la cantidad es igual}
+        teamMax:=0
+  fin
+  proceso informarEquipoMax (E teamMax:numero)
+  comenzar
+    si (teamMax = 1)
+      Informar('El_Equipo_Maximo_Es',teamMax)
+    sino
+      si (teamMax = 2)
+        Informar('El_Equipo_Maximo_Es',teamMax)
+      sino 
+        Informar('AmbosEquipos_MismasCantidades_EntoncesMax',teamMax)
+  fin
+areas 
+  {esquinas compartidas por robots jugadores}
+  areaEnComun: AreaPC (2,98,3,99)
+  {areas para el R1}
+  area1R1: AreaP(2,1,2,97)
+  area2R1: AreaP(2,100,2,100)
+  {areas para el R2}
+  area1R2: AreaP(3,1,3,97)
+  area2R2: AreaP(3,100,3,100)
+  {areas para el A1}
+  area1A1: AreaP(1,98,1,98)
+  area2A1: AreaP(4,98,100,98)
+  {areas para el A2}
+  area1A2: AreaP(1,99,1,99)
+  area2A2: AreaP(4,99,100,99)
+  areaJefe: AreaP (1,1,1,1)
+robots
+  robot rTeamRojo
+  variables
+    cantF:numero
+    id:numero
+    nroEquipo:numero
+  comenzar
+    nroEquipo:= 1
+    RecibirMensaje(id,jefe)
+    recorrerAvenidaTeamRojo(cantF)
+    EnviarMensaje(id,jefe)
+    EnviarMensaje(cantF,jefe)
+  fin
+  robot rTeamAzul
+  variables
+    cantP:numero
+    id:numero
+    nroEquipo:numero
+  comenzar
+    nroEquipo:= 2
+    RecibirMensaje(id,jefe)
+    recorrerCalleTeamAzul(cantP)
+    EnviarMensaje(id,jefe)
+    EnviarMensaje(cantP,jefe)
+  fin
+  robot rJefe
+  variables
+    team1:numero
+    team2:numero
+    teamMax:numero
+  comenzar
+    {-- envia id's --}
+    EnviarMensaje(1,r1)
+    EnviarMensaje(2,r2)
+    EnviarMensaje(3,a1)
+    EnviarMensaje(4,a2)
+    recibirValoresEquipos(team1,team2)
+    calcularMax(team1,team2,teamMax)
+    informarEquipoMax(teamMax)
+  fin
+variables
+  r1: rTeamRojo
+  r2: rTeamRojo
+  a1: rTeamAzul
+  a2: rTeamAzul
+  jefe: rJefe
+comenzar
+  {-- le saigno el area compartida a todos los robots --}
+  AsignarArea(r1,areaEnComun)
+  AsignarArea(r2,areaEnComun)
+  AsignarArea(a1,areaEnComun)
+  AsignarArea(a2,areaEnComun)
+  {-- le asigno sus dos areas privadas a cada robot --}
+  {robot R1}
+  AsignarArea(r1,area1R1)
+  AsignarArea(r1,area2R1)
+  {robot R2}
+  AsignarArea(r2,area1R2)
+  AsignarArea(r2,area2R2)
+  {robot A1}
+  AsignarArea(a1,area1A1)
+  AsignarArea(a1,area2A1)
+  {robot A2}
+  AsignarArea(a2,area1A2)
+  AsignarArea(a2,area2A2)
+  {robot jefe}
+  AsignarArea(jefe,areaJefe)
+  {inicializamos cada robot}
+  Iniciar(jefe,1,1)
+  Iniciar(a1,100,98)
+  Iniciar(a2,100,99)
+  Iniciar(r1,2,1)
+  Iniciar(r2,3,1)
+fin
