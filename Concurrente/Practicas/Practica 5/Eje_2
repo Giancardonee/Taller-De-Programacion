@@ -16,7 +16,7 @@ procesos
     repetir cantF
       depositarFlor
   fin
-  proceso procesarEsquina (E cantF:numero)
+  proceso procesarEsquinaRecolector (E cantF:numero)
   variables
     avAct:numero
     caAct:numero
@@ -29,64 +29,53 @@ procesos
     Pos(avAct,caAct)
     LiberarEsquina(50,50)
   fin
-  proceso hacerEtapa 
+  proceso comunicarseEntreRecolectores (E id:numero)
   variables
-    cantF:numero
+    termino:boolean
+  comenzar
+    si (id = 1)
+      EnviarMensaje(V,r2)
+      EnviarMensaje(V,r3)
+      RecibirMensaje(termino,*)
+      RecibirMensaje(termino,*)
+    sino
+      si (id = 2)
+        EnviarMensaje(V,r1)
+        EnviarMensaje(V,r3)
+        RecibirMensaje(termino,*)
+        RecibirMensaje(termino,*)
+      sino
+        si (id = 3)
+          EnviarMensaje(V,r1)
+          EnviarMensaje(V,r2)
+          RecibirMensaje(termino,*)
+          RecibirMensaje(termino,*)
+  fin
+  proceso hacerEtapa (ES cantF:numero)
   comenzar
     cantF:=0
-    repetir 9
+    repetir 9 {cantCuadras}  
       juntarPapeles
       juntarFlores(cantF)
       mover
-    juntarFlores(cantF) {procesamos la ultima esquina}
-    si (cantF > 0)
-      procesarEsquina(cantF) {esquina 50,50}
+    juntarFlores(cantF)
   fin
-  proceso hacerLasEtapas 
+  proceso hacerLasEtapas(E id:numero)
   variables
-    puedoSeguir:boolean
+    cantF:numero
   comenzar
     derecha
-    puedoSeguir:=V
-    {repetir 10  <--- Preguntar si va repetir o mientras}
-    mientras (puedoSeguir = V) 
-      hacerEtapa
-      EnviarMensaje(V,jefe) {le avisa al jefe que termino}
-      RecibirMensaje(puedoSeguir,jefe) {espera para ver si sigue o termina.}
-    EnviarMensaje(V,jefe){para que avise que termino la ultima de las ultimas etapas}
+    repetir 11
+      hacerEtapa(cantF)
+      si (cantF >0)
+        procesarEsquinaRecolector(cantF)
+      comunicarseEntreRecolectores(id)
   fin
   proceso asignarIds 
   comenzar
     EnviarMensaje(1,r1)
     EnviarMensaje(2,r2)
     EnviarMensaje(3,r3)
-  fin
-  proceso esperarQueTerminenEtapa
-  variables
-    termine:boolean
-  comenzar
-    repetir 3
-      RecibirMensaje(termine,*)
-  fin  
-  proceso avisarQueContinuenEtapas
-  comenzar
-    EnviarMensaje(V,r1)
-    EnviarMensaje(V,r2)
-    EnviarMensaje(V,r3)
-  fin
-  proceso avisarQueTerminenEtapas
-  comenzar
-    EnviarMensaje(F,r1)
-    EnviarMensaje(F,r2)
-    EnviarMensaje(F,r3)
-  fin
-  proceso habilitarEtapas
-  comenzar
-    repetir 10 {cantidad de etapas}
-      esperarQueTerminenEtapa
-      avisarQueContinuenEtapas
-    esperarQueTerminenEtapa
-    avisarQueTerminenEtapas
   fin
   proceso procesarEsquinaJefe
   variables
@@ -97,7 +86,8 @@ procesos
     avIni:= PosAv
     caIni:= PosCa
     cantF:=0
-  {no es necesario bloquear la esquina, porque en teoria, ya terminaron todos los robots para que el jefe pueda acceder a esta esquina}
+    {no es necesario bloquear la esquina, porque: }
+    {ya terminaron todos los robots, por lo tanto no podrian accederla}
     Pos(50,50)
     juntarFlores(cantF)
     Pos(avIni,caIni)
@@ -115,12 +105,17 @@ robots
     id:numero
   comenzar
     RecibirMensaje(id,jefe)
-    hacerLasEtapas
+    hacerLasEtapas(id)
+    EnviarMensaje(V,jefe) {le avisa al MASTER que termino}
   fin
   robot rJefe
+  variables
+    termino:boolean
   comenzar
     asignarIds
-    habilitarEtapas
+    {espera a que terminen los 3 robots para procesar la esquina 50,50}
+    repetir 3
+      RecibirMensaje(termino,*)
     procesarEsquinaJefe
   fin
 variables
