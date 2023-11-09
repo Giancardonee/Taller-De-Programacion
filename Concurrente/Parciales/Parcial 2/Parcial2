@@ -1,0 +1,164 @@
+programa parcial3
+procesos
+  proceso juntarFlores (ES cantF:numero)
+  comenzar
+    mientras (HayFlorEnLaEsquina)
+      tomarFlor
+      cantF:= cantF+1
+  fin
+  proceso hacerLado (ES cantF:numero)
+  comenzar
+    repetir 5 {lado}
+      juntarFlores(cantF)
+      mover
+    juntarFlores(cantF)
+  fin
+  proceso asignarIDs
+  comenzar  
+    EnviarMensaje(1,trabajador1)
+    EnviarMensaje(2,trabajador2)
+    EnviarMensaje(3,trabajador3)
+  fin
+  proceso esperarQueTerminenLado
+  variables
+    termino:boolean
+  comenzar
+    repetir 4 {cantidad de lados}
+      repetir 3
+        RecibirMensaje(termino,*)
+      EnviarMensaje(V,trabajador1)
+      EnviarMensaje(V,trabajador2)
+      EnviarMensaje(V,trabajador3)
+  fin
+  proceso hacerCuadrado (ES cantF:numero)
+  variables
+    seguir: boolean
+  comenzar
+    repetir 4
+      hacerLado(cantF)
+      derecha
+      EnviarMensaje(V,fiscalizador)
+      RecibirMensaje(seguir,fiscalizador)
+  fin
+  proceso calcularMax (E suId:numero; E suCantidad:numero; ES max:numero; ES robotMax:numero)
+  comenzar
+    si (suCantidad > max)
+      max:= suCantidad
+      robotMax:= suId
+  fin
+  proceso recibirMensajeDelMismoRobot (E id:numero; ES max:numero; ES robotMax:numero)
+  variables
+    cantidad:numero
+  comenzar
+    si (id = 1)
+      RecibirMensaje(cantidad,trabajador1)
+    sino
+      si (id = 2)
+        RecibirMensaje(cantidad,trabajador2)
+      sino
+        si (id = 3)
+          RecibirMensaje(cantidad,trabajador3)
+    calcularMax(id,cantidad,max,robotMax)
+  fin
+  proceso calcularMaximo (ES robotMax:numero)
+  variables
+    id:numero
+    cantidad:numero
+    max:numero
+  comenzar
+    robotMax:=0
+    max:=0
+    repetir 3
+      RecibirMensaje(id,*)
+      recibirMensajeDelMismoRobot(id,max,robotMax)
+  fin
+  proceso dejarDeAUnaFlor (ES cantF:numero; E avIni:numero; E caIni:numero)
+  comenzar
+    BloquearEsquina(10,10)
+    Pos(10,10)
+    depositarFlor
+    Pos(avIni,caIni)
+    LiberarEsquina(10,10)
+    cantF:= cantF-1
+  fin
+  proceso avisarleAlMaximo (E robotMax:numero)
+  comenzar
+    si (robotMax = 1)
+      EnviarMensaje (V,trabajador1)
+      EnviarMensaje (F,trabajador2)
+      EnviarMensaje (F,trabajador3)
+    sino
+      si (robotMax = 2)
+        EnviarMensaje (F,trabajador1)
+        EnviarMensaje (V,trabajador2)
+        EnviarMensaje (F,trabajador3)
+      sino
+        si (robotMax =3)
+          EnviarMensaje (F,trabajador1)
+          EnviarMensaje (F,trabajador2)
+          EnviarMensaje (V,trabajador3)
+       sino
+         si (robotMax =4)
+           EnviarMensaje(F,trabajador1)
+           EnviarMensaje(F,trabajador2)
+           EnviarMensaje(F,trabajador3)
+  fin
+areas
+  esquinaTrabajadores: AreaPC (10,10,10,10)
+  areaTrabajador1: AreaP (1,1,6,6)
+  areaTrabajador2: AreaP (7,1,12,6)
+  areaTrabajador3: AreaP (13,1,18,6)
+  areaFiscalizador: AreaP (20,1,20,1)
+robots
+  robot rTrabajador
+  variables
+    id:numero
+    cantF:numero
+    soyMax:boolean
+    avIni:numero
+    caIni:numero
+  comenzar
+    avIni:=PosAv
+    caIni:=PosCa
+    RecibirMensaje(id,fiscalizador)
+    hacerCuadrado(cantF)
+    EnviarMensaje(id,fiscalizador)
+    EnviarMensaje(cantF,fiscalizador)
+    {esto se lo agregue yo para que vaya a su esquina inicial}    
+    Pos(avIni,caIni)
+    RecibirMensaje(soyMax,fiscalizador)
+    si (soyMax = F)
+      mientras (cantF>0)
+        dejarDeAUnaFlor(cantF,avIni,caIni)
+  fin
+  robot rFiscalizador
+  variables
+    robotMax:numero
+  comenzar
+    asignarIDs
+    esperarQueTerminenLado
+    calcularMaximo(robotMax)
+    Informar('El_robot_maximo_es',robotMax)
+    avisarleAlMaximo (robotMax)
+  fin
+variables
+  trabajador1: rTrabajador
+  trabajador2: rTrabajador
+  trabajador3: rTrabajador
+  fiscalizador: rFiscalizador
+comenzar
+  {le asigno las areas privadas a cada robot}
+  AsignarArea(trabajador1,areaTrabajador1)
+  AsignarArea(trabajador2,areaTrabajador2)
+  AsignarArea(trabajador3,areaTrabajador3)
+  AsignarArea(fiscalizador, areaFiscalizador)
+  {areas compartidas para trabajadores}
+  AsignarArea(trabajador1,esquinaTrabajadores)
+  AsignarArea(trabajador2,esquinaTrabajadores)
+  AsignarArea(trabajador3,esquinaTrabajadores)
+  {iniciamos cada robot}
+  Iniciar(trabajador1,1,1)
+  Iniciar(trabajador2,7,1)
+  Iniciar(trabajador3,13,1)
+  Iniciar(fiscalizador,20,1)
+fin  
