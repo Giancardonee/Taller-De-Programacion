@@ -1,0 +1,151 @@
+programa eje4
+procesos
+  proceso juntarFlores (ES cantF:numero)
+  comenzar
+    mientras (HayFlorEnLaEsquina)
+      tomarFlor
+      cantF:= cantF+1
+  fin
+  {..procesos para los floreros..}
+  proceso accederAEsquina (ES cantF:numero; E avRandom:numero; E caRandom:numero; E avIni:numero; E caIni:numero)
+  comenzar
+    BloquearEsquina(avRandom,caRandom)
+    Pos(avRandom,caRandom)
+    juntarFlores(cantF)
+    Pos(avIni,caIni)
+    LiberarEsquina(avRandom,caRandom)
+  fin
+  proceso dejarFlores (E cantF:numero)
+  comenzar
+    repetir cantF
+      depositarFlor
+  fin
+  proceso depositarFloresEsquinaCompartida (E cantF:numero; E avIni:numero; E caIni:numero)
+  comenzar
+    BloquearEsquina(10,10)
+    Pos(10,10)
+    dejarFlores (cantF)
+    Pos(avIni,caIni)
+    LiberarEsquina(10,10)
+  fin
+  {.. procesos para el jefe..}
+  proceso asignarIDs
+  comenzar
+    EnviarMensaje(1,florero1)
+    EnviarMensaje(2,florero2)
+    EnviarMensaje(3,florero3)
+  fin
+  proceso enviarleMensajesAlRobotRandom (E id:numero; E avRandom:numero; E caRandom:numero)
+  comenzar
+    si (id = 1)
+      EnviarMensaje(V,florero1) {para que acceda}
+      EnviarMensaje(avRandom,florero1)
+      EnviarMensaje(caRandom,florero1)
+    sino
+      si (id = 2)
+        EnviarMensaje(V,florero2) {para que acceda}
+        EnviarMensaje(avRandom,florero2)
+        EnviarMensaje(caRandom,florero2)
+      sino
+        si (id = 3)
+          EnviarMensaje(V,florero3) {para que acceda}
+          EnviarMensaje(avRandom,florero3)
+          EnviarMensaje(avRandom,florero3)
+  fin
+  proceso habilitarAccesos
+  variables
+    idRandom:numero
+    avRandom:numero
+    caRandom:numero
+  comenzar
+    repetir 8 {cant de accesos}
+      Random(idRandom,1,3)
+      Random(avRandom,40,60)
+      Random(caRandom,40,60)
+      enviarleMensajesAlRobotRandom(idRandom,avRandom,caRandom)
+  fin
+  proceso avisarQueTerminaronIntentos
+  comenzar
+    EnviarMensaje(F,florero1)
+    EnviarMensaje(F,florero2)
+    EnviarMensaje(F,florero3)
+  fin
+  proceso saberFloresTotales (ES total:numero)
+  variables
+    cant:numero
+  comenzar
+    total:=0
+    repetir 3
+      RecibirMensaje(cant,*)
+      total:= total + cant
+  fin
+areas
+  cuadrante: AreaPC (40,40,60,60)
+  esquinaDepositar: AreaPC (10,10,10,10)
+  esqFlorero1: AreaP (1,1,1,1)
+  esqFlorero2: AreaP (2,1,2,1)
+  esqFlorero3: AreaP (3,1,3,1)
+  esqFiscalizador: AreaP (4,1,4,1)
+robots
+  robot rFlorero
+  variables
+    id:numero
+    acceder:boolean
+    avRandom:numero
+    caRandom:numero
+    cantF: numero
+    avIni:numero
+    caIni:numero
+  comenzar
+    avIni:= PosAv
+    caIni:= PosCa
+    cantF:=0
+    RecibirMensaje(id,fiscalizador)
+    RecibirMensaje(acceder,fiscalizador)
+    mientras (acceder = V)
+      RecibirMensaje(avRandom,fiscalizador)
+      RecibirMensaje(caRandom,fiscalizador)
+      accederAEsquina(cantF,avRandom,caRandom,avIni,caIni)
+      RecibirMensaje(acceder,fiscalizador)
+     {.............................................}
+    si (cantF >0) {no tiene sentido que accedan a la esquina si no juntaron flores}
+      depositarFloresEsquinaCompartida(cantF,avIni,caIni)
+     {..............................................}
+    EnviarMensaje(cantF,fiscalizador) {le paso la cantidad que tenga}
+    cantF:=0 {la inicializo en 0,porque si deposite las flores no tengo deberia tener mas.}
+  fin
+  robot rFiscalizador
+  variables
+    floresTotales:numero
+  comenzar
+    asignarIDs
+    habilitarAccesos
+    avisarQueTerminaronIntentos
+    saberFloresTotales(floresTotales)
+    Informar('La_cantidad_de_flores_totales_son',floresTotales)
+  fin
+variables
+  florero1: rFlorero
+  florero2: rFlorero
+  florero3: rFlorero
+  fiscalizador: rFiscalizador
+comenzar
+  {..asignamos el cuadrante a los floreros..}
+  AsignarArea(florero1,cuadrante)
+  AsignarArea(florero2,cuadrante)
+  AsignarArea(florero3,cuadrante)
+  {..asignamos la esquina para depositar flores..}
+  AsignarArea(florero1,esquinaDepositar)
+  AsignarArea(florero2,esquinaDepositar)
+  AsignarArea(florero3,esquinaDepositar)
+  {..Asignamos esquinas iniciales..}
+  AsignarArea(florero1,esqFlorero1)
+  AsignarArea(florero2,esqFlorero2)
+  AsignarArea(florero3,esqFlorero3)
+  AsignarArea(fiscalizador,esqFiscalizador)
+  {..iniciamos a los robots..}
+  Iniciar (florero1,1,1)
+  Iniciar (florero2,2,1)
+  Iniciar (florero3,3,1)
+  Iniciar (fiscalizador,4,1)
+fin
