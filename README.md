@@ -1,2 +1,4 @@
+# Taller de Programnacion
 
-![codd](https://github.com/Giancardonee/Taller-De-Programacion/assets/114377978/ef66d21c-4e34-45f2-b38a-ed8af7b6c1a1)
+
+![image](https://github.com/Giancardonee/Taller-De-Programacion/assets/114377978/0ba096cc-77fa-4a3f-a9d9-cf7337c572ec)
