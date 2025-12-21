@@ -1,4 +1,27 @@
-# Taller de Programacion
+# 🛠️ Taller de Programación
 
+Repositorio de apoyo para la materia **Taller de Programación**.  
+En este repositorio se encuentran ejercicios, prácticas y material trabajado a lo largo de la cursada.
 
-![image](https://github.com/Giancardonee/Taller-De-Programacion/assets/114377978/0ba096cc-77fa-4a3f-a9d9-cf7337c572ec)
+---
+
+> ⚠️ **Aviso importante**
+>
+> Este repositorio contiene **soluciones realizadas por mí.**   
+> No representan a la cátedra y pueden contener errores.
+
+---
+
+## 📚 Contenidos de la materia
+
+Durante la cursada se trabajaron los siguientes módulos:
+
+- 🧩 **Programación Imperativa**  
+- 🧱 **Programación Orientada a Objetos**  
+- 🔀 **Programación Concurrente**
+
+Cada módulo aborda distintos paradigmas y formas de resolver problemas, aplicando conceptos fundamentales de la programación.
+
+---
+
+✍️ **Autor:** Gianca
